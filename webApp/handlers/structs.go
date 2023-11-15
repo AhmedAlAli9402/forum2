@@ -14,7 +14,7 @@ type Login struct {
 type Register struct {
 	User_name  string
 	User_email string
-	User_pass  []byte
+	User_pass  string
 	User_type  string
 }
 

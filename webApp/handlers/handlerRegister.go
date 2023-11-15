@@ -29,7 +29,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	if !PasswordChecker(pass) {
 		fmt.Println("User Password error!")
 	}
-	data.User_pass, _ = bcrypt.GenerateFromPassword([]byte(pass), 4)
+	data.User_pass, _ = HashPass(pass)
 	data.User_type = "member"
 	println(data.User_name, data.User_email, data.User_pass, data.User_type)
 	sqlStmt, err := db.Prepare("INSERT INTO users (user_name, user_email, user_pass, user_type) VALUES (?, ?, ?, ?)")
@@ -75,4 +75,13 @@ func PasswordChecker(pass string) bool {
 func EmailChecker(email string) bool {
 	re := regexp.MustCompile(`^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9]+\.[a-zA-Z]{2,}$`)
 	return re.MatchString(email)
+}
+
+func HashPass(str string) (string, error) {
+	b, err := bcrypt.GenerateFromPassword([]byte(str), 4)
+	return string(b), err
+}
+func ComparePass(pass, hash string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(pass))
+	return err == nil
 }
